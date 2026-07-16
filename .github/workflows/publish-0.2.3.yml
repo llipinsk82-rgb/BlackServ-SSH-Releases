@@ -1,0 +1,56 @@
+name: Publish BlackServ SSH 0.2.3
+
+on:
+  push:
+    paths:
+      - ".github/workflows/publish-0.2.3.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  publish-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout public update repository
+        uses: actions/checkout@v4
+
+      - name: Download signed APK artifact
+        env:
+          ARTIFACT_URL: "https://sdmntprcentralus.oaiusercontent.com/files/00000000-a4f4-71f5-b0de-cdb48dd5e141/raw?se=2026-07-16T12:58:02Z&sp=r&sv=2026-02-06&sr=b&scid=151d9b00-598f-5d6c-97e1-48dee186749f&skoid=d1cabc79-3240-4866-94fe-6005330cb49e&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-07-16T09:57:31Z&ske=2026-07-18T09:57:31Z&sks=b&skv=2026-02-06&sig=8tfQMfHa/s5MvAowrmlzEnTSraFCTZO%2BErsIvQEuTzk%3D"
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --retry-delay 2 "$ARTIFACT_URL" -o /tmp/blackserv-ssh.zip
+          rm -rf /tmp/blackserv-ssh
+          mkdir -p /tmp/blackserv-ssh
+          unzip -q /tmp/blackserv-ssh.zip -d /tmp/blackserv-ssh
+          APK_SOURCE="$(find /tmp/blackserv-ssh -type f -name '*.apk' -print -quit)"
+          test -n "$APK_SOURCE"
+          cp "$APK_SOURCE" BlackServ-SSH-v0.2.3.apk
+
+      - name: Verify and prepare manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA256="$(sha256sum BlackServ-SSH-v0.2.3.apk | awk '{print $1}')"
+          test "$SHA256" = "7ab96b2d9e455724256c2e541b2d54f2766140af41b8f5deb7a8a52a406f5a58"
+          cat > latest.json <<EOF
+          {
+            "version_code": 14,
+            "version_name": "0.2.3",
+            "apk_url": "https://raw.githubusercontent.com/llipinsk82-rgb/BlackServ-SSH-Releases/main/BlackServ-SSH-v0.2.3.apk",
+            "sha256": "$SHA256",
+            "notes": "Ekran terminala pozostaje aktywny i nie wygasza telefonu. Dodano potwierdzenie kopiowania konsoli oraz zabezpieczenia transferów SFTP."
+          }
+          EOF
+
+      - name: Publish APK and manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add BlackServ-SSH-v0.2.3.apk latest.json
+          git commit -m "Publish BlackServ SSH 0.2.3" || exit 0
+          git push
