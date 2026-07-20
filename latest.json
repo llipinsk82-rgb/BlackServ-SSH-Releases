@@ -1,7 +1,7 @@
 {
-  "version_code": 14,
-  "version_name": "0.2.3",
-  "apk_url": "https://raw.githubusercontent.com/llipinsk82-rgb/BlackServ-SSH-Releases/main/BlackServ-SSH-v0.2.3.apk",
-  "sha256": "7ab96b2d9e455724256c2e541b2d54f2766140af41b8f5deb7a8a52a406f5a58",
-  "notes": "Ekran terminala pozostaje aktywny i nie wygasza telefonu. Dodano potwierdzenie kopiowania konsoli oraz zabezpieczenia transferów SFTP."
+  "version_code": 16,
+  "version_name": "0.2.5",
+  "apk_url": "https://raw.githubusercontent.com/llipinsk82-rgb/BlackServ-SSH-Releases/main/BlackServ-SSH-v0.2.5.apk",
+  "sha256": "7555b8a01ed2395692e78e22757ae7d95f30c81c7ac5b1dd4bbba8a7f0c9c474",
+  "notes": "ENTER jest pierwszym przyciskiem terminala. Moje Komendy 2.0 pozwalają wybrać tryb WSTAW, WYKONAJ albo KLAWISZ oraz tworzyć własne przyciski ENTER, TAB, ESC, CTRL+C, CTRL+D i strzałki."
 }
