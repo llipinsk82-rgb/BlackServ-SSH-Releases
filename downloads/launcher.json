@@ -1,0 +1,9 @@
+{
+  "versionCode": 1,
+  "versionName": "1.0.0",
+  "packageName": "eu.blackserv.vpn.launcher",
+  "targetPackage": "eu.blackserv.vpn",
+  "apkUrl": "https://raw.githubusercontent.com/llipinsk82-rgb/BlackServ-SSH-Releases/main/downloads/BlackServ-VPN-TV-Launcher-latest.apk",
+  "sha256": "e842da282edb4fb5fba2c9120d726d1b112677b3b94d1028c0240074ea60fb27",
+  "certificateSha256": "22427f181e5b09a2bd9d669edaff753788d29ca742bb22bcb868464b4acc59ae"
+}
