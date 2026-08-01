@@ -1,2 +1,2 @@
-b1e08ddbfa78f83adcde7106c0c4d601db513c709470e38d141ebe699e45da6b  BlackServ-VPN-FireTV-v0.4.0-test.apk
-b1e08ddbfa78f83adcde7106c0c4d601db513c709470e38d141ebe699e45da6b  BlackServ-VPN-FireTV-latest.apk
+8687b68984c5140873dd4e869b105c2f5293ee4b8b3001de662a5e3064cf1254  BlackServ-VPN-FireTV-v0.5.0.apk
+8687b68984c5140873dd4e869b105c2f5293ee4b8b3001de662a5e3064cf1254  BlackServ-VPN-FireTV-latest.apk
