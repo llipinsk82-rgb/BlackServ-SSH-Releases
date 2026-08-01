@@ -1,0 +1,59 @@
+name: Publish BlackServ VPN v0.5.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-blackserv-vpn-v051.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download verified build artifact
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          URL='https://sdmntprnortheu.oaiusercontent.com/files/00000000-698c-81f4-b0da-b64785c06a48/raw?se=2026-08-01T20:03:19Z&sp=r&sv=2026-02-06&sr=b&scid=749ef494-1c61-56fa-8f89-35205bdf139c&skoid=b5d2651b-fef3-4bb0-a03b-ca59cc22929b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-01T01:19:44Z&ske=2026-08-02T01:19:44Z&sks=b&skv=2026-02-06&sig=7gPuV1323IKJMh1VIg6yxL2MUfNRXI4SOBxpiSINi%2BM%3D'
+          curl --fail --silent --show-error --location --proto '=https' --max-time 120 "$URL" -o /tmp/blackserv-v051.zip
+          echo 'eb858ac53d8d619bc343a7bc5611445b8072298264bf0a3aba1ca20fdd9e1195  /tmp/blackserv-v051.zip' | sha256sum --check
+          mkdir -p /tmp/blackserv-v051
+          unzip -q /tmp/blackserv-v051.zip -d /tmp/blackserv-v051
+          APK=/tmp/blackserv-v051/BlackServ-VPN-FireTV-v0.5.1.apk
+          test -s "$APK"
+          echo 'e0842efad55d94c3f9561b88099eea89550c6d10704c2e0b2114a56611eb5efa  '"$APK" | sha256sum --check
+
+      - name: Publish stable and versioned APK
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p downloads
+          cp /tmp/blackserv-v051/BlackServ-VPN-FireTV-v0.5.1.apk downloads/BlackServ-VPN-FireTV-v0.5.1.apk
+          cp /tmp/blackserv-v051/BlackServ-VPN-FireTV-v0.5.1.apk downloads/BlackServ-VPN-FireTV-latest.apk
+
+          cat > downloads/SHA256SUMS.txt <<'EOF'
+          e0842efad55d94c3f9561b88099eea89550c6d10704c2e0b2114a56611eb5efa  BlackServ-VPN-FireTV-v0.5.1.apk
+          e0842efad55d94c3f9561b88099eea89550c6d10704c2e0b2114a56611eb5efa  BlackServ-VPN-FireTV-latest.apk
+          EOF
+
+          cat > downloads/update.json <<'EOF'
+          {
+            "versionCode": 6,
+            "versionName": "0.5.1",
+            "packageName": "eu.blackserv.vpn",
+            "apkUrl": "https://raw.githubusercontent.com/llipinsk82-rgb/BlackServ-SSH-Releases/main/downloads/BlackServ-VPN-FireTV-latest.apk",
+            "sha256": "e0842efad55d94c3f9561b88099eea89550c6d10704c2e0b2114a56611eb5efa",
+            "certificateSha256": "22427f181e5b09a2bd9d669edaff753788d29ca742bb22bcb868464b4acc59ae"
+          }
+          EOF
+
+          git config user.name 'BlackServ Release Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add downloads/BlackServ-VPN-FireTV-v0.5.1.apk downloads/BlackServ-VPN-FireTV-latest.apk downloads/SHA256SUMS.txt downloads/update.json
+          git commit -m 'release: publish BlackServ VPN v0.5.1'
+          git push
