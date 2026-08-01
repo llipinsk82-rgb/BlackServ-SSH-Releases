@@ -1,8 +1,8 @@
 {
-  "versionCode": 5,
-  "versionName": "0.5.0",
+  "versionCode": 6,
+  "versionName": "0.5.1",
   "packageName": "eu.blackserv.vpn",
   "apkUrl": "https://raw.githubusercontent.com/llipinsk82-rgb/BlackServ-SSH-Releases/main/downloads/BlackServ-VPN-FireTV-latest.apk",
-  "sha256": "8687b68984c5140873dd4e869b105c2f5293ee4b8b3001de662a5e3064cf1254",
+  "sha256": "e0842efad55d94c3f9561b88099eea89550c6d10704c2e0b2114a56611eb5efa",
   "certificateSha256": "22427f181e5b09a2bd9d669edaff753788d29ca742bb22bcb868464b4acc59ae"
 }
