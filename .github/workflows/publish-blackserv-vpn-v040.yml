@@ -1,0 +1,53 @@
+name: Publish BlackServ VPN v0.4 APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-blackserv-vpn-v040.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout release repository
+        uses: actions/checkout@v4
+
+      - name: Download verified build artifact
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          curl --fail --location --retry 3 --max-time 120 \
+            'https://sdmntprnortheu.oaiusercontent.com/files/00000000-0988-81f4-bfb9-b1dd92c5f685/raw?se=2026-08-01T17:19:02Z&sp=r&sv=2026-02-06&sr=b&scid=c6af9eaa-3ff2-5c09-a314-7250073d9c2b&skoid=b5d2651b-fef3-4bb0-a03b-ca59cc22929b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-01T01:20:03Z&ske=2026-08-02T01:20:03Z&sks=b&skv=2026-02-06&sig=3QnJ8%2BYIt0pPPYx3kX9M42GM3N3wz8PoIkYN2oN%2BGiE%3D' \
+            --output /tmp/blackserv-vpn-artifact.zip
+          rm -rf /tmp/blackserv-vpn-artifact
+          mkdir -p /tmp/blackserv-vpn-artifact
+          unzip -q /tmp/blackserv-vpn-artifact.zip -d /tmp/blackserv-vpn-artifact
+          APK="$(find /tmp/blackserv-vpn-artifact -type f -name 'BlackServ-VPN-FireTV-v0.4.0-test.apk' -print -quit)"
+          test -n "$APK"
+          echo 'b1e08ddbfa78f83adcde7106c0c4d601db513c709470e38d141ebe699e45da6b  '"$APK" | sha256sum --check
+
+          mkdir -p downloads
+          cp "$APK" downloads/BlackServ-VPN-FireTV-v0.4.0-test.apk
+          cp "$APK" downloads/BlackServ-VPN-FireTV-latest.apk
+          (
+            cd downloads
+            sha256sum BlackServ-VPN-FireTV-v0.4.0-test.apk BlackServ-VPN-FireTV-latest.apk > SHA256SUMS.txt
+          )
+
+      - name: Publish public direct-download files
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name 'BlackServ Release Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add downloads/BlackServ-VPN-FireTV-v0.4.0-test.apk \
+                  downloads/BlackServ-VPN-FireTV-latest.apk \
+                  downloads/SHA256SUMS.txt
+          git commit -m 'Publish BlackServ VPN Fire TV v0.4.0 test APK'
+          git push origin HEAD:main
