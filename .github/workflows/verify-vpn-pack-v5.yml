@@ -1,0 +1,35 @@
+name: Verify VPN profile pack v5
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/verify-vpn-pack-v5.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Verify all public mirrors
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          EXPECTED='4f67d07e7d74480466925a640193f8484b2e5c64d2389934976e21b3f5415f3e'
+          TS="$(date +%s%N)"
+          urls=(
+            "https://raw.githubusercontent.com/llipinsk82-rgb/BlackServ-SSH-Releases/main/vpn/blackserv-vpn-pack.bsv64?blackserv_ts=$TS"
+            "https://github.com/llipinsk82-rgb/BlackServ-SSH-Releases/raw/refs/heads/main/vpn/blackserv-vpn-pack.bsv64?blackserv_ts=$TS"
+            "https://cdn.jsdelivr.net/gh/llipinsk82-rgb/BlackServ-SSH-Releases@main/vpn/blackserv-vpn-pack.bsv64?blackserv_ts=$TS"
+          )
+          for i in "${!urls[@]}"; do
+            out="/tmp/pack-$i.bsv64"
+            curl --fail --location --proto '=https' --retry 3 --max-time 60 "${urls[$i]}" -o "$out"
+            actual="$(sha256sum "$out" | awk '{print $1}')"
+            echo "mirror[$i]=$actual"
+            test "$actual" = "$EXPECTED"
+            head -1 "$out" | grep -qx 'BSV64'
+          done
